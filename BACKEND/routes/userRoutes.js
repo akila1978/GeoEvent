@@ -1,15 +1,7 @@
 // BACKEND/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2');
-
-// Database Connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '1234', // ඔයාගේ password එක
-    database: 'goo'   // දැන් අපි SQL හැදුවේ 'goo' නමින්
-});
+const db = require('../db'); // Import shared DB connection
 
 // 1. SIGNUP ROUTE (Updated)
 router.post('/signup', (req, res) => {
@@ -37,7 +29,8 @@ router.post('/signup', (req, res) => {
         }
         
         res.status(201).json({
-            message: "User registered successfully",
+            Status: "Success", // Added for frontend compatibility
+            message: "User registered successfully", 
             id: result.insertId,
             name: username,
             email: email,
@@ -61,7 +54,8 @@ router.post('/login', (req, res) => {
         if (data.length > 0) {
             const user = data[0];
             res.status(200).json({
-                message: "Login successful",
+                Status: "Success", // Added for frontend compatibility
+                message: "Login successful", 
                 id: user.id,
                 name: user.username, 
                 email: user.email,

@@ -1,10 +1,10 @@
 const mysql = require('mysql2'); // මෙතන mysql2 වෙන්න ඕන
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '1234', // ඔයාගේ MySQL පාස්වර්ඩ් එක
-    database: 'goo'            // ඔයාගේ Database නම
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '1234',
+    database: process.env.DB_NAME || 'goo'
 });
 
 db.connect((err) => {

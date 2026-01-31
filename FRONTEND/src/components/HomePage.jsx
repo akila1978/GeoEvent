@@ -1,3 +1,5 @@
+// src/pages/Home.jsx
+
 import React, { useState, useEffect } from 'react';
 import { 
   Search, MapPin, Calendar, ArrowRight, Star, 
@@ -5,19 +7,34 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
 import { useTheme } from '../context/ThemeContext';
+import axios from 'axios'; // Axios Import කරන්න
 
 const HomePage = () => {
-  const { theme } = useTheme();
+  useTheme();
   const navigate = useNavigate();
   
   const [activeCategory, setActiveCategory] = useState('All');
   const [showAd, setShowAd] = useState(false);
+  
+  // 1. Events State එක හැදුවා
+  const [events, setEvents] = useState([]);
 
+  // Ad Popup Logic
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowAd(true);
     }, 3000); 
     return () => clearTimeout(timer);
+  }, []);
+
+  // 2. Backend එකෙන් Events Data ගන්නවා
+  useEffect(() => {
+    axios.get('/api/events')
+      .then(res => {
+        // Home page එකේ අලුත්ම Events 3ක් විතරක් පෙන්නමු
+        setEvents(res.data.slice(0, 3));
+      })
+      .catch(err => console.log("Error fetching events:", err));
   }, []);
 
   const closeAd = () => {
@@ -26,48 +43,16 @@ const HomePage = () => {
 
   const handleCategoryClick = (category) => {
     setActiveCategory(category);
-    navigate('/events'); // Movies click කළාමත් මෙතනින් Events පිටුවට යයි
+    navigate('/events'); 
   };
 
-  // Dummy Data
-  const events = [
-    { 
-      id: 1, 
-      title: "Colombo Music Festival", 
-      date: "Dec 24, 2025", 
-      location: "Port City, Colombo", 
-      price: "LKR 5,000",
-      image: "https://images.unsplash.com/photo-1459749411177-2a2960953ec7?auto=format&fit=crop&q=80&w=1000",
-      category: "Music"
-    },
-    { 
-      id: 2, 
-      title: "Tech Innovation Summit", 
-      date: "Jan 10, 2026", 
-      location: "BMICH, Colombo", 
-      price: "Free",
-      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000",
-      category: "Technology"
-    },
-    { 
-      id: 3, 
-      title: "Traditional Art Fair", 
-      date: "Dec 28, 2025", 
-      location: "Galle Fort", 
-      price: "LKR 1,500",
-      image: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?auto=format&fit=crop&q=80&w=1000",
-      category: "Arts"
-    }
-  ];
-
   const artists = [
-    { name: "Santhush", role: "Vocalist", img: "https://randomuser.me/api/portraits/men/32.jpg" },
-    { name: "Yohani", role: "Performer", img: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { name: "Bathiya", role: "Vocalist", img: "https://randomuser.me/api/portraits/men/45.jpg" },
-    { name: "Umara", role: "Singer", img: "https://randomuser.me/api/portraits/women/68.jpg" },
+    { name: "Santhush", role: "Vocalist", img: "https://i.ytimg.com/vi/JvVCwUqR6j4/maxresdefault.jpg" },
+    { name: "Yohani", role: "Performer", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXBDwHxs651SX0HkGAwoqsfpVeIk8xkQqowQ&s" },
+    { name: "Bathiya", role: "Vocalist", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXHbau8327z5CUkFRYyFE-8BHEGosCWaC9sw&s" },
+    { name: "Umara", role: "Singer", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_frC4r5gkb0h68zoAhXpGkmeLTuIQJqlZZQ&s" },
   ];
 
-  // 👇 මෙන්න මෙතන "Workshops" අයින් කරලා "Movies" දැම්මා
   const categories = ['All', 'Music', 'Technology', 'Arts', 'Sports', 'Movies'];
 
   return (
@@ -113,7 +98,7 @@ const HomePage = () => {
         </div>
       )}
       
-      {/* 1. HERO SECTION WITH ADVANCED SEARCH */}
+      {/* 1. HERO SECTION */}
       <div className="relative h-[600px] flex flex-col items-center justify-center text-center px-4">
         <div 
           className="absolute inset-0 bg-cover bg-center z-0" 
@@ -157,7 +142,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* 2. CATEGORY FILTER (UPDATED) */}
+      {/* 2. CATEGORY FILTER */}
       <section className="container mx-auto px-6 py-10">
         <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide">
           {categories.map((cat) => (
@@ -176,7 +161,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 3. FEATURED EVENTS */}
+      {/* 3. FEATURED EVENTS (Connected to Backend) */}
       <section className="container mx-auto px-6 pb-16">
         <div className="flex justify-between items-end mb-8">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Trending Events</h2>
@@ -189,39 +174,53 @@ const HomePage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event) => (
-            <div key={event.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
-              <div className="relative h-56">
-                <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg text-sm font-bold text-purple-600">
-                  {event.price}
+          {events.length > 0 ? (
+            events.map((event) => (
+              <div key={event.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
+                <div className="relative h-56">
+                  {/* Backend image column: 'image' */}
+                  <img 
+                    src={event.image ? `/uploads/${event.image}` : "https://via.placeholder.com/400x250?text=Event"} 
+                    alt={event.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                  <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg text-sm font-bold text-purple-600">
+                    {/* Backend price column: 'ticket_price' */}
+                    {event.ticket_price > 0 ? `LKR ${event.ticket_price}` : "Free"}
+                  </div>
+                  <div className="absolute bottom-4 left-4 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                    {event.category || "General"}
+                  </div>
                 </div>
-                <div className="absolute bottom-4 left-4 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-                  {event.category}
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{event.title}</h3>
                 
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                    <Calendar size={16} className="mr-2 text-purple-500" /> {event.date}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2 line-clamp-1">{event.title}</h3>
+                  
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                      <Calendar size={16} className="mr-2 text-purple-500" /> 
+                      {/* Backend date column: 'date' */}
+                      {event.date ? event.date.split('T')[0] : 'TBA'}
+                    </div>
+                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                      <MapPin size={16} className="mr-2 text-purple-500" /> {event.location}
+                    </div>
                   </div>
-                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                    <MapPin size={16} className="mr-2 text-purple-500" /> {event.location}
-                  </div>
-                </div>
 
-                <button 
-                  onClick={() => navigate('/events')}
-                  className="w-full py-3 rounded-xl bg-gray-50 dark:bg-gray-700 text-purple-600 dark:text-purple-400 font-bold hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 dark:hover:text-white transition-all duration-300 flex justify-center items-center gap-2"
-                >
-                  <Ticket size={18} /> Book Ticket
-                </button>
+                  <button 
+                    onClick={() => navigate('/events')}
+                    className="w-full py-3 rounded-xl bg-gray-50 dark:bg-gray-700 text-purple-600 dark:text-purple-400 font-bold hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 dark:hover:text-white transition-all duration-300 flex justify-center items-center gap-2"
+                  >
+                    <Ticket size={18} /> Book Ticket
+                  </button>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10">
+                <p className="text-gray-500 text-lg">No events to display yet.</p>
             </div>
-          ))}
+          )}
         </div>
       </section>
 

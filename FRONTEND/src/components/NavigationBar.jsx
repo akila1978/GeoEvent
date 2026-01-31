@@ -1,3 +1,5 @@
+// src/components/NavigationBar.jsx
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MapPin, User, Menu, Sun, Moon } from 'lucide-react';
@@ -6,7 +8,6 @@ import { useUser } from '../context/UserContext';
 
 const NavigationBar = () => {
   const { theme, toggleTheme } = useTheme();
-  // 1. වෙනස්කම: මෙතනට 'user' එකත් ගත්තා role එක චෙක් කරන්න
   const { isLoggedIn, logout, user } = useUser(); 
   const location = useLocation();
 
@@ -18,10 +19,6 @@ const NavigationBar = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
-
-  // 2. වෙනස්කම: Profile Path එක තීරණය කරන තැන
-  // user.role එක 'event_management' නම් manager dashboard එකට, නැත්නම් normal profile එකට
-  const profilePath = user?.role === 'event_management' ? '/manager-dashboard' : '/profile';
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
@@ -67,15 +64,15 @@ const NavigationBar = () => {
             /* Logged In View */
             <div className="flex items-center space-x-3">
               
-              {/* 3. වෙනස්කම: මෙතන link එක dynamic කළා */}
+              {/* FIX: මෙතන Logic එක අයින් කළා. කවුරු වුණත් Profile එකටමයි යන්නේ. */}
+              {/* ProfilePage එක ඇතුලේ තමයි Manager ද User ද කියලා තීරණය වෙන්නේ */}
               <Link 
-                to={profilePath} 
+                to="/profile" 
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-purple-600 font-medium text-sm"
               >
                 <User size={18} />
                 <span className="hidden sm:block">
-                    {/* නම පෙන්නන්න ඕන නම් මෙතන {user?.name} දාන්නත් පුළුවන් */}
-                    Profile
+                    {user?.name || "Profile"}
                 </span>
               </Link>
 

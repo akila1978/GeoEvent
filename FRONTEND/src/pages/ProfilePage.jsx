@@ -6,25 +6,28 @@ import { User, Mail, LogOut, MapPin, Calendar } from 'lucide-react';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+
+  // FIX: useState එක පටන් ගන්නකොටම දත්ත check කරනවා (Lazy Initialization)
+  // මේක නිසා useEffect එක ඇතුලේ setUser කරන්න ඕන නෑ.
+  const [user] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   useEffect(() => {
-    // 1. LocalStorage එකෙන් User විස්තර ගන්න
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      // Login වෙලා නැත්නම් Login page එකට යවන්න
+    // User කෙනෙක් නැත්නම් විතරක් Login එකට යවන්න
+    if (!user) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Data මකන්න
-    navigate("/login"); // Login එකට යවන්න
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
-  if (!user) return <div className="text-center mt-20 text-white">Loading...</div>;
+  // User නැත්නම් මුකුත් පෙන්නන්නේ නෑ (useEffect එකෙන් redirect වෙනකම්)
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10 px-4">
