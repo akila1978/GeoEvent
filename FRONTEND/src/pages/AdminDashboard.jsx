@@ -8,14 +8,14 @@ const AdminDashboard = () => {
   // --- HELPER FUNCTIONS (API Calls) ---
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/stats');
+      const res = await axios.get('geoevent-production.up.railway.app/api/admin/stats');
       setStats(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchPendingEvents = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/pending-events');
+      const res = await axios.get('geoevent-production.up.railway.app/api/admin/pending-events');
       setPendingEvents(res.data);
     } catch (err) { console.error(err); }
   };
@@ -33,7 +33,7 @@ const AdminDashboard = () => {
   // --- APPROVE FUNCTION ---
   const handleApprove = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/update-event-status/${id}`, { status: 'approved' });
+      await axios.put(`geoevent-production.up.railway.app/api/admin/update-event-status/${id}`, { status: 'approved' });
       alert("Event Approved!");
       fetchPendingEvents(); // Refresh List
       fetchStats(); // Update Stats
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   // --- REJECT FUNCTION ---
   const handleReject = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/update-event-status/${id}`, { status: 'rejected' });
+      await axios.put(`geoevent-production.up.railway.app/api/admin/update-event-status/${id}`, { status: 'rejected' });
       alert("Event Rejected!");
       fetchPendingEvents();
       fetchStats();
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
     if(!window.confirm("Are you sure you want to DELETE this event permanently?")) return;
     
     try {
-      await axios.delete(`http://localhost:5000/api/delete-event/${id}`);
+      await axios.delete(`geoevent-production.up.railway.app/api/delete-event/${id}`);
       alert("Event Deleted Permanently!");
       fetchPendingEvents();
       fetchStats();

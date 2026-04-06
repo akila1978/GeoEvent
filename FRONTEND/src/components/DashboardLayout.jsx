@@ -23,13 +23,13 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchStats = () => {
-    axios.get('http://localhost:5000/api/admin/stats')
+    axios.get('geoevent-production.up.railway.app/api/admin/stats')
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   };
 
   const fetchPendingEvents = () => {
-    axios.get('http://localhost:5000/api/admin/pending-events')
+    axios.get('geoevent-production.up.railway.app/api/admin/pending-events')
       .then(res => setPendingEvents(res.data))
       .catch(err => console.error(err));
   };
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
   const handleEventAction = (id, status) => {
     if(!window.confirm(`Are you sure you want to ${status} this event?`)) return;
 
-    axios.put(`http://localhost:5000/api/admin/update-event-status/${id}`, { status })
+    axios.put(`geoevent-production.up.railway.app/api/admin/update-event-status/${id}`, { status })
       .then(res => {
         if(res.data.Status === "Success") {
           alert(`Event ${status} successfully!`);
