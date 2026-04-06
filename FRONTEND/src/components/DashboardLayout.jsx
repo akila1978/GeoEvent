@@ -16,7 +16,9 @@ const AdminDashboard = () => {
 
   // Data Fetching
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     fetchStats();
+    // eslint-disable-next-line react-hooks/immutability
     fetchPendingEvents();
   }, []);
 

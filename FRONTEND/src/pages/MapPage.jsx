@@ -106,7 +106,7 @@ const MapPage = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           
-          {/* Map එක User ගේ තැනට Update කරනවා */}
+          
           <ChangeView center={[userLocation.lat, userLocation.lng]} />
 
           {/* User Marker (Blue Pin) */}
