@@ -25,7 +25,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/users/login', {
+      // වැදගත්: මෙතනට අනිවාර්යයෙන්ම 'https://' සහිත Full Railway URL එක දිය යුතුයි
+      const response = await fetch('https://geoevent-production.up.railway.app/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,21 +40,19 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      // 1. User ව Save කරගන්නවා
+      // 1. User දත්ත Save කරගන්නවා
       login(data); 
 
-      // 2. Role එක Check කරලා අදාල තැනට යවනවා (UPDATED LOGIC)
+      // 2. Role එක අනුව අදාළ Dashboard එකට යවනවා
       if (data.role === 'event_manager') {
-          // Event Manager නම් Dashboard එකට යවන්න
           navigate('/manager-dashboard');
       } else {
-          // Normal User නම් Home Page එකට යවන්න
           navigate('/'); 
       }
       
     } catch (err) {
       console.error(err);
-      setError(err.message || "Connection failed. Is backend running?");
+      setError(err.message || "Connection failed. Please check your internet or backend status.");
     } finally {
       setLoading(false);
     }
