@@ -1,6 +1,6 @@
 // BACKEND/server.js
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors'); // මෙය තවමත් අවශ්‍ය විය හැක
 const dotenv = require('dotenv');
 const multer = require('multer'); 
 const path = require('path');
@@ -13,13 +13,18 @@ const db = require('./db');
 
 const app = express();
 
-// --- 1. CORS CONFIGURATION (FIXED) ---
-app.use(cors({
-    origin: "*", 
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-}));
+// --- 1. MANUAL CORS CONFIGURATION (මෙය තමයි වැදගත්ම කොටස) ---
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*"); 
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    
+    // Browser එකෙන් මුලින්ම එවන OPTIONS request එකට කෙලින්ම success response එකක් දීම
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
 
 app.use(express.json());
 
