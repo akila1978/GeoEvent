@@ -1,5 +1,4 @@
 // BACKEND/server.js
-
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -15,7 +14,6 @@ const db = require('./db');
 const app = express();
 
 // --- 1. CORS CONFIGURATION (FIXED) ---
-// ඕනෑම තැනක සිට එන Request වලට අවසර ලබා දීම (Netlify CORS Issue එක විසඳීමට)
 app.use(cors({
     origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -43,7 +41,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// --- 4. TEST ROUTE (Backend එක වැඩදැයි බැලීමට) ---
+// --- 4. TEST ROUTE ---
 app.get('/', (req, res) => {
     res.send("GeoEvent Backend is Running Successfully!");
 });
@@ -56,13 +54,10 @@ app.post('/api/add-event', upload.single('image'), (req, res) => {
     if (!req.body) {
         return res.status(400).json({ Status: "Error", Message: "No data received." });
     }
-
     const { title, category, date, time, location, description, ticket_price, organizer_id } = req.body;
     const image = req.file ? req.file.filename : null;
-
     const sql = "INSERT INTO events (title, category, date, time, location, description, ticket_price, organizer_id, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
     const values = [title, category || 'General', date, time, location, description, ticket_price || 0, organizer_id, image];
-
     db.query(sql, values, (err, result) => {
         if (err) return res.status(500).json({ Status: "Error", Error: err });
         return res.status(201).json({ Status: "Success", id: result.insertId });
@@ -74,13 +69,11 @@ app.get('/api/events', (req, res) => {
     const category = req.query.category;
     let sql = "SELECT * FROM events WHERE status = 'approved'";
     let params = [];
-
     if (category && category !== 'All') {
         sql += " AND category = ?";
         params.push(category);
     }
     sql += " ORDER BY created_at DESC";
-
     db.query(sql, params, (err, data) => {
         if (err) return res.status(500).json("Error");
         return res.json(data);
@@ -101,7 +94,6 @@ app.get('/api/admin/stats', (req, res) => {
     const sqlUsers = "SELECT COUNT(*) as totalUsers FROM users";
     const sqlEvents = "SELECT COUNT(*) as totalEvents FROM events";
     const sqlPending = "SELECT COUNT(*) as pendingEvents FROM events WHERE status = 'pending'";
-
     db.query(sqlUsers, (err, usersResult) => {
         if(err) return res.json({Error: err});
         db.query(sqlEvents, (err, eventsResult) => {
