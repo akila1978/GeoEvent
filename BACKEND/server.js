@@ -14,11 +14,12 @@ const db = require('./db');
 
 const app = express();
 
-// --- 1. CORS CONFIGURATION ---
-// Netlify එකෙන් එන Request වලට අවසර දීම
+// --- 1. CORS CONFIGURATION (FIXED) ---
+// ඕනෑම තැනක සිට එන Request වලට අවසර ලබා දීම (Netlify CORS Issue එක විසඳීමට)
 app.use(cors({
-    origin: ["https://geoevent.netlify.app", "http://localhost:5173"], // ඔයාගේ Netlify URL එක මෙතන දාන්න
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
 
@@ -42,7 +43,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// --- 4. TEST ROUTE (404 වැළැක්වීමට) ---
+// --- 4. TEST ROUTE (Backend එක වැඩදැයි බැලීමට) ---
 app.get('/', (req, res) => {
     res.send("GeoEvent Backend is Running Successfully!");
 });
